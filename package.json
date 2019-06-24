@@ -1,0 +1,19 @@
+{
+  "name": "NodejsConsoleApp",
+  "version": "0.0.0",
+  "description": "NodejsConsoleApp",
+  "main": "app.js",
+  "author": {
+    "name": "Dev",
+    "email": "harshkasyap@gmail.com"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "child-process": "^1.0.2",
+    "ejs": "^2.6.2",
+    "express": "^4.16.4",
+    "fs-extra": "^8.0.1",
+    "multer": "^1.4.1",
+    "nodeman": "^1.1.2"
+  }
+}

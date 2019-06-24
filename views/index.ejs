@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>File Sharing</title>
+
+  <script type="text/javascript">
+    
+    function searchAndFilter() {
+      var input, filter, ul, li, a, i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      listOfFiles = document.getElementById("listOfFiles");
+      divs = listOfFiles.getElementsByTagName("div");
+      for (i = 0; i < divs.length; i++) {
+          p = document.getElementById("p"+i);
+          txtValue = p.textContent || p.innerText;
+
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              divs[i].style.display = "";
+          } else {
+              divs[i].style.display = "none";
+          }
+      }
+    }
+
+    window.onload = function () {
+    
+    var dataResult;
+
+    let url="http://"+ location.hostname +":5110/files";
+    fetch(url).then(response => response.json())
+    .then( (result) => {
+        dataResult = result;
+        for(var i = 0; i < dataResult.length; i++) {
+            var mydiv = document.getElementById("listOfFiles");
+            var dTag = document.createElement('div');
+
+            var tag = document.createElement('p');
+            tag.setAttribute('id', "p"+i);
+            tag.innerHTML = dataResult[i] + "<emsp>";
+            dTag.appendChild(tag);
+
+            var table = document.createElement('table');
+            var tr = document.createElement('tr');
+            
+            var showOpen = 0
+            // Add all the type of files which we want to open at runtime
+            if (dataResult[i].toUpperCase().split('.').pop().indexOf("PDF") > -1
+              || dataResult[i].toUpperCase().split('.').pop().indexOf("JS") > -1) {
+              var td1 = document.createElement('td');
+              var aTagOpen = document.createElement('a');
+              aTagOpen.setAttribute('href', dataResult[i]);
+              aTagOpen.innerHTML = "Open <emsp>";
+              td1.appendChild(aTagOpen);
+              tr.appendChild(td1);
+            }
+
+            var td2 = document.createElement('td');
+            var aTagDown = document.createElement('a');
+            aTagDown.setAttribute('href', dataResult[i]);
+            aTagDown.setAttribute('download', '');
+            aTagDown.innerHTML = "Download </br>";
+            td2.appendChild(aTagDown);
+            tr.appendChild(td2);
+
+            table.appendChild(tr);
+            dTag.append(table);
+            mydiv.appendChild(dTag);
+        }
+    })
+    .catch(error => alert(error));
+    
+    }
+  </script>
+
+</head>
+
+<body>
+  <form method="post" enctype="multipart/form-data" action="/upload">
+      <h1>File Sharing Platform (In Development)</h1>
+      <h6><%= _result %></h6>
+      <input type="file" name="fileUploader" multiple />
+      <input type="submit" value="Submit">
+  </form>
+
+  <h3>Shared Files</h3>
+  <input type="text" id="myInput" onkeyup="searchAndFilter()" placeholder="Search for Files..">
+  <br><br>
+  <div class="listFiles" id="listOfFiles"></div>
+</body>
+
+</html>
