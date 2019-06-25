@@ -7,6 +7,9 @@
     "name": "Dev",
     "email": "harshkasyap@gmail.com"
   },
+  "scripts": {
+    "start": "node fileServer.js"
+  },
   "dependencies": {
     "body-parser": "^1.18.3",
     "child-process": "^1.0.2",

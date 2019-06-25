@@ -45,7 +45,7 @@ app.post('/upload', function(req, res) {
           return res.end("Something went wrong!");
       } else {
         //res.status(200).contentType("text/plain").end("File uploaded!");
-	res.redirect('/');
+        res.redirect('/');
         //res.render('index.ejs', { _result: "File Uploaded!" });
       }
   });
