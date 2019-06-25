@@ -10,6 +10,7 @@
 	* Done with setup, can open your_ip_address:5110 from any machine on same network.
 
 * Improvements Expected
+	* Progress Bar while Uploading
 	* Folder Upload
 	* Nice GUI
 	* Filter files such as documents, images, softwares and more.
