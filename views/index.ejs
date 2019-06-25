@@ -46,7 +46,6 @@
             var table = document.createElement('table');
             var tr = document.createElement('tr');
             
-            var showOpen = 0
             // Add all the type of files which we want to open at runtime
             if (dataResult[i].toUpperCase().split('.').pop().indexOf("PDF") > -1
               || dataResult[i].toUpperCase().split('.').pop().indexOf("JS") > -1) {
@@ -66,6 +65,15 @@
             td2.appendChild(aTagDown);
             tr.appendChild(td2);
 
+	    var td3 = document.createElement('td');
+            var aTagDel = document.createElement('a');
+            aTagDel.setAttribute('href', "delete/?_file=" + dataResult[i]);
+            // Would like to show name of file while deleting
+	    aTagDel.setAttribute('onclick', "return confirm('Are you sure to delete')");
+            aTagDel.innerHTML = "Delete </br>";
+            td3.appendChild(aTagDel);
+            tr.appendChild(td3);
+
             table.appendChild(tr);
             dTag.append(table);
             mydiv.appendChild(dTag);
@@ -80,7 +88,7 @@
 
 <body>
   <form method="post" enctype="multipart/form-data" action="/upload">
-      <h1>File Sharing Platform (In Development)</h1>
+      <h1>File Sharing Platform (Beta)</h1>
       <h6><%= _result %></h6>
       <input type="file" name="fileUploader" multiple />
       <input type="submit" value="Submit">

@@ -6,6 +6,8 @@ var path = require('path');
 var _filename = '';
 var listFiles = []
 
+fs.ensureDirSync('./Share');
+
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
       callback(null, "./Share");
@@ -29,7 +31,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/files', function (req, res) {
-  listFiles = []
+  listFiles = [];
   fs.readdirSync('./Share').map((file) => {
     listFiles.push(file);
   });
@@ -43,9 +45,15 @@ app.post('/upload', function(req, res) {
           return res.end("Something went wrong!");
       } else {
         //res.status(200).contentType("text/plain").end("File uploaded!");
-        res.render('index.ejs', { _result: "File Uploaded!" });
+	res.redirect('/');
+        //res.render('index.ejs', { _result: "File Uploaded!" });
       }
   });
+});
+
+app.get('/delete', function(req, res) {
+  fs.unlinkSync('./Share/' + req.query._file);
+  res.redirect('/');
 });
 
 app.listen(5110, function () {
