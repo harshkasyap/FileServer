@@ -1,7 +1,7 @@
 {
-  "name": "NodejsConsoleApp",
+  "name": "FileServer",
   "version": "0.0.0",
-  "description": "NodejsConsoleApp",
+  "description": "File Sharing App",
   "main": "app.js",
   "author": {
     "name": "Dev",

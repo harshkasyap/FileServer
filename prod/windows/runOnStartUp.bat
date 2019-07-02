@@ -1,0 +1,1 @@
+mkshortcut /target:%~dp0runVbScript.bat /shortcut:"%appdata%\Microsoft\Windows\Start Menu\Programs\Startup\runVbScript.bat"

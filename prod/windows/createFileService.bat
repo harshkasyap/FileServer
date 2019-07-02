@@ -1,0 +1,1 @@
+sc create "FileServer" start= auto displayname= "FileServer" binpath= "%~dp0runfs.bat"
