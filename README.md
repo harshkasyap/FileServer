@@ -17,3 +17,11 @@
 	* Explicit Delete Access to the Uploader or admin hosting the server.
 	* portable, that on one click complete setup is done, even node setup automation. 
 
+
+* Easy Deployment
+	* Check docker file in prod/docker
+		* Improvements Sought
+			* It is taking much space (435 MB), can we reduce it.
+			* Write a more easier scipr on top to run these commands.
+			* Git integration with docker, to auto-build images, and user always have the latest image.
+	* Other easy deployments in progress
