@@ -30,7 +30,7 @@
     
     var dataResult;
 
-    let url="http://"+ location.hostname +":5110/files";
+    let url="http://"+ location.hostname + ":" + location.port + "/files";
     fetch(url).then(response => response.json())
     .then( (result) => {
         dataResult = result;
