@@ -17,3 +17,8 @@
 	* Explicit Delete Access to the Uploader or admin hosting the server.
 	* portable, that on one click complete setup is done, even node setup automation. 
 
+* Production
+	* In Windows Environment, go in prod\windows folder
+		* Open Command Prompt and run runOnStartUp.bat
+		* Or, Open command prompt in administrator mode, and run createFileService (but not working)
+		* Or, Run runfs.bat from command line
