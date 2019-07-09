@@ -6,8 +6,165 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>File Sharing</title>
 
-  <script type="text/javascript">
+  <style>
+    /* Chat Box Styles */
+    body {font-family: Arial, Helvetica, sans-serif;}
+    * {box-sizing: border-box;}
     
+    /* Button used to open the chat form - fixed at the bottom of the page */
+    .open-chatname {
+      background-color: #c5c52f;
+      color: #080319;
+      padding: 16px 20px;
+      border: none;
+      cursor: pointer;
+      opacity: 0.8;
+      position: fixed;
+      bottom: 53px;
+      right: 28px;
+      width: 280px;
+    }
+    
+    .open-button {
+      background-color: #555;
+      color: white;
+      padding: 16px 20px;
+      border: none;
+      cursor: pointer;
+      position: fixed;
+      bottom: 23px;
+      right: 28px;
+      width: 280px;
+    }
+    
+    /* The popup chat - hidden by default */
+    .chat-popup {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      right: 15px;
+      border: 3px solid #f1f1f1;
+      z-index: 9;
+    }
+    
+    /* Add styles to the form container */
+    .form-container {
+      max-width: 300px;
+      padding: 10px;
+      background-color: white;
+    }
+    
+    /* Full-width textarea */
+    .form-container textarea {
+      width: 100%;
+      padding: 15px;
+      margin: 5px 0 22px 0;
+      border: none;
+      background: #f1f1f1;
+      resize: none;
+      min-height: 70px;
+    }
+    
+    /* When the textarea gets focus, do something */
+    .form-container textarea:focus {
+      background-color: #ddd;
+      outline: none;
+    }
+    
+    /* Set a style for the submit/send button */
+    .form-container .btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 16px 20px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom:10px;
+      opacity: 0.8;
+    }
+    
+    /* Add a red background color to the cancel button */
+    .form-container .cancel {
+      background-color: red;
+    }
+    
+    /* Add some hover effects to buttons */
+    .form-container .btn:hover, .open-button:hover {
+      opacity: 1;
+    }
+
+    /* Chat Box Styles */
+    .container {
+      border: 2px solid #dedede;
+      background-color: #f1f1f1;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    .darker {
+      border-color: #ccc;
+      background-color: #ddd;
+    }
+
+    .container::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+
+    .container img {
+      float: left;
+      max-width: 60px;
+      width: 100%;
+      margin-right: 20px;
+      border-radius: 50%;
+    }
+
+    .container img.right {
+      float: right;
+      margin-left: 20px;
+      margin-right:0;
+    }
+
+    .time-right {
+      float: right;
+      color: #aaa;
+    }
+
+    .time-left {
+      float: left;
+      color: #999;
+    }
+
+    div.ex1 {
+      background-color: lightblue;
+      width: 100%;
+      height: 500px;
+      overflow-y: scroll;
+    }
+
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+   $(function() {
+      $("#chatsumbit").click(function() {
+        $.post({
+            url: "sendMsg",
+            type: 'POST',
+            data: {
+              chatname: $("#chatname").val(),
+              msg: $("#msg").val()
+            },
+            success: function(msg) {
+              $("#msg").val("")
+            }               
+        });
+      });
+    })
+  </script>
+  <script type="text/javascript" >
     function searchAndFilter() {
       var input, filter, ul, li, a, i, txtValue;
       input = document.getElementById("myInput");
@@ -15,71 +172,156 @@
       listOfFiles = document.getElementById("listOfFiles");
       divs = listOfFiles.getElementsByTagName("div");
       for (i = 0; i < divs.length; i++) {
-          p = document.getElementById("p"+i);
-          txtValue = p.textContent || p.innerText;
+        p = document.getElementById("p"+i);
+        txtValue = p.textContent || p.innerText;
 
-          if (txtValue.toUpperCase().indexOf(filter) > -1) {
-              divs[i].style.display = "";
-          } else {
-              divs[i].style.display = "none";
-          }
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            divs[i].style.display = "";
+        } else {
+            divs[i].style.display = "none";
+        }
       }
     }
 
+    function scrollBottom() {
+      var mydiv = document.getElementById("listOfMsgs")
+      mydiv.scrollTop = mydiv.scrollHeight;
+    }  
+
     window.onload = function () {
     
-    var dataResult;
+      var dataResult = []
+      var listMsgs = []
 
-    let url="http://"+ location.hostname + ":" + location.port + "/files";
-    fetch(url).then(response => response.json())
-    .then( (result) => {
-        dataResult = result;
-        for(var i = 0; i < dataResult.length; i++) {
+      let url="http://"+ location.hostname + ":" + location.port + "/files";
+      setInterval(() => {
+        fetch(url).then(response => response.json())
+        .then( (result) => {
+          var flag = false
+          for(var i = 0; i < result.length; i++) {
+            if (dataResult.length == 0 || dataResult[i] !== result[i]) {
+              flag = true;
+              break;
+            }
+          }
+          if (flag) {
+            dataResult = result
             var mydiv = document.getElementById("listOfFiles");
-            var dTag = document.createElement('div');
+            mydiv.scrollTop = mydiv.scrollHeight - mydiv.clientHeight;
+            mydiv.innerHTML = ""
+            for(var i = 0; i < dataResult.length; i++) {
+              var dTag = document.createElement('div');
 
-            var tag = document.createElement('p');
-            tag.setAttribute('id', "p"+i);
-            tag.innerHTML = dataResult[i] + "<emsp>";
-            dTag.appendChild(tag);
+              var tag = document.createElement('p');
+              tag.setAttribute('id', "p"+i);
+              tag.innerHTML = dataResult[i] + "<emsp>";
+              dTag.appendChild(tag);
 
-            var table = document.createElement('table');
-            var tr = document.createElement('tr');
-            
-            // Add all the type of files which we want to open at runtime
-            if (dataResult[i].toUpperCase().split('.').pop().indexOf("PDF") > -1
-              || dataResult[i].toUpperCase().split('.').pop().indexOf("JS") > -1) {
-              var td1 = document.createElement('td');
-              var aTagOpen = document.createElement('a');
-              aTagOpen.setAttribute('href', dataResult[i]);
-              aTagOpen.innerHTML = "Open <emsp>";
-              td1.appendChild(aTagOpen);
-              tr.appendChild(td1);
+              var table = document.createElement('table');
+              var tr = document.createElement('tr');
+              
+              // Add all the type of files which we want to open at runtime
+              if (dataResult[i].toUpperCase().split('.').pop().indexOf("PDF") > -1
+                || dataResult[i].toUpperCase().split('.').pop().indexOf("JS") > -1) {
+                var td1 = document.createElement('td');
+                var aTagOpen = document.createElement('a');
+                aTagOpen.setAttribute('href', dataResult[i]);
+                aTagOpen.innerHTML = "Open <emsp>";
+                td1.appendChild(aTagOpen);
+                tr.appendChild(td1);
+              }
+
+              var td2 = document.createElement('td');
+              var aTagDown = document.createElement('a');
+              aTagDown.setAttribute('href', dataResult[i]);
+              aTagDown.setAttribute('download', '');
+              aTagDown.innerHTML = "Download </br>";
+              td2.appendChild(aTagDown);
+              tr.appendChild(td2);
+
+              var td3 = document.createElement('td');
+              var aTagDel = document.createElement('a');
+              aTagDel.setAttribute('href', "delete/?_file=" + dataResult[i]);
+              aTagDel.setAttribute('onclick', "return (() => confirm(\"are you sure you want to delete " + dataResult[i] + "?\"))()");
+              aTagDel.innerHTML = "Delete </br>";
+              td3.appendChild(aTagDel);
+              tr.appendChild(td3);
+
+              table.appendChild(tr);
+              dTag.append(table);
+              mydiv.appendChild(dTag);
+            }
+          }
+        })
+        .catch(error => alert(error));
+
+        let msgUrl="http://"+ location.hostname + ":" + location.port + "/getMsgs";
+        fetch(msgUrl).then(response => response.json())
+        .then( (result) => {
+          var flag = false
+
+          if (listMsgs.length == 0 || ( listMsgs[listMsgs.length - 1] !== result[result.length -1] )) {
+            flag = true;
+          }
+          console.log(flag + "  " +listMsgs[listMsgs.length - 1] + " " +  result[result.length -1])
+
+          if (flag) {
+            var index = 0
+            if (listMsgs.length > 0) {
+              index = result.indexOf(listMsgs[listMsgs.length - 1])
+            }
+            listMsgs =  listMsgs.concat(result.slice(index+1)) 
+            console.log(listMsgs)
+            var mydiv = document.getElementById("listOfMsgs")
+            //mydiv.scrollTop = mydiv.scrollHeight;
+            for (var i = index; i < listMsgs.length; i++) {
+              var splitMsg = listMsgs[i].split(":F@!M!@S:")
+
+              var dTag = document.createElement('div')
+
+              var tag = document.createElement('p')
+              tag.setAttribute('id', "mp"+i)
+              if (splitMsg[0] == "")
+                splitMsg[0] = "any"
+              tag.innerHTML = splitMsg[0] +  " : " + splitMsg[1] + "<emsp>"
+              dTag.setAttribute('class', "container")
+              dTag.appendChild(tag)
+
+              var stag = document.createElement('span')
+              stag.setAttribute('id', "msp"+i)
+              stag.setAttribute('class', "time-left")
+              stag.innerHTML = splitMsg[2] + "<emsp>"
+              dTag.appendChild(stag);
+
+              mydiv.appendChild(dTag)
+            }
+            // Leep Scroll Bar at bottom
+            scrollBottom();
+
+            // Keep ChatName in Local Storage
+            if (document.getElementById("chatname").value !== "") {
+              localStorage['chatname'] = document.getElementById("chatname").value  
+            } else if (localStorage['chatname'] !== undefined) {
+              document.getElementById("chatname").value = localStorage['chatname']
             }
 
-            var td2 = document.createElement('td');
-            var aTagDown = document.createElement('a');
-            aTagDown.setAttribute('href', dataResult[i]);
-            aTagDown.setAttribute('download', '');
-            aTagDown.innerHTML = "Download </br>";
-            td2.appendChild(aTagDown);
-            tr.appendChild(td2);
+          }
+        })
+        .catch(error => alert(error));
+      }, 1000);
+    }
 
-	    var td3 = document.createElement('td');
-            var aTagDel = document.createElement('a');
-            aTagDel.setAttribute('href', "delete/?_file=" + dataResult[i]);
-            aTagDel.setAttribute('onclick', "return (() => confirm(\"are you sure you want to delete " + dataResult[i] + "?\"))()");
-            aTagDel.innerHTML = "Delete </br>";
-            td3.appendChild(aTagDel);
-            tr.appendChild(td3);
+    function openForm() {
+      if (document.getElementById("chatname").value == "") {
+        alert ("First Enter Your name to start chat")
+      } else {
+        document.getElementById("myForm").style.display = "block";
+        document.getElementById("lblchatname").innerText = "Hello " + document.getElementById("chatname").value
+      }
+    }
 
-            table.appendChild(tr);
-            dTag.append(table);
-            mydiv.appendChild(dTag);
-        }
-    })
-    .catch(error => alert(error));
-    
+    function closeForm() {
+      document.getElementById("myForm").style.display = "none";
     }
   </script>
 
@@ -87,16 +329,33 @@
 
 <body>
   <form method="post" enctype="multipart/form-data" action="/upload">
-      <h1>File Sharing Platform (Beta)</h1>
-      <h6><%= _result %></h6>
-      <input type="file" name="fileUploader" multiple />
-      <input type="submit" value="Submit">
+    <h1>File Sharing Platform (Beta)</h1>
+    <h6><%= _result %></h6>
+    <input type="file" name="fileUploader" multiple />
+    <input type="submit" value="Submit">
   </form>
 
   <h3>Shared Files</h3>
   <input type="text" id="myInput" onkeyup="searchAndFilter()" placeholder="Search for Files..">
   <br><br>
   <div class="listFiles" id="listOfFiles"></div>
+
+  <textarea class="open-chatname" placeholder="Type your name to chat" name="chatname" id="chatname" required></textarea>
+  <button class="open-button" onclick="openForm()">Chat</button>
+
+  <!-- Chat-Box -->
+  <div class="chat-popup" id="myForm">
+    <div class="form-container">      
+      <h3><label for="msg"><div id="lblchatname"></div></label></h3>
+      <div class="ex1" id="listOfMsgs">
+      </div>
+     
+      <textarea placeholder="Type message.." name="msg" id="msg" required></textarea>
+
+      <button class="btn" id="chatsumbit">Send</button>
+      <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+    </div>
+  </div>
 </body>
 
 </html>
