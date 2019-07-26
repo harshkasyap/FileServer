@@ -83,7 +83,7 @@ app.get('/getMsgs', function (req, res) {
     var data = fs.readFileSync(fileName).toString().split("\nF@!!@S\n")
     data.map((msg) => {
       var splitMsg = msg.split(":F@!M!@S:")
-      if ((new Date() - new Date(splitMsg[0])) < 1200000) {
+      if ((new Date() - new Date(splitMsg[0])) < 1800000) {
         listMsgs.push(`${splitMsg[1]}:F@!M!@S:${splitMsg[2]}:F@!M!@S:${new Date(splitMsg[0]).getHours()}:${new Date(splitMsg[0]).getMinutes()}:${new Date(splitMsg[0]).getSeconds()}`)
       }
     })
@@ -91,6 +91,6 @@ app.get('/getMsgs', function (req, res) {
   res.json(listMsgs)
 });
 
-app.listen(5110, function () {
+app.listen(process.argv[2], function () {
   console.log('Node server is running..')
 });
