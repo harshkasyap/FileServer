@@ -91,6 +91,6 @@ app.get('/getMsgs', function (req, res) {
   res.json(listMsgs)
 });
 
-app.listen(5110, function () {
+app.listen(process.argv[2], function () {
   console.log('Node server is running..')
 });

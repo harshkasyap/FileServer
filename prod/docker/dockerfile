@@ -1,8 +1,17 @@
-FROM ubuntu:latest
+FROM alpine
 
 MAINTAINER Harsh Kasyap<harshkasyap@gmail.com>
 
-RUN apt-get update && apt-get install -y npm && apt-get install -y git && apt-get clean
+# install dependencies
+RUN apk update && apk upgrade
+RUN apk add npm 
+RUN apk add git 
+RUN apk add openssh-client
+RUN apk add tzdata
+
+# set your timezone
+RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+RUN apk del tzdata
 
 RUN mkdir /root/.ssh/
 ADD id_rsa /root/.ssh/id_rsa
@@ -10,11 +19,12 @@ RUN chmod 700 /root/.ssh/id_rsa
 RUN chown -R root:root /root/.ssh
 RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
-RUN git clone git@github.com:harshkasyap/FileServer.git
-RUN apt-get remove -y git && apt-get -y autoremove
+RUN git clone --single-branch --branch master git@github.com:harshkasyap/FileServer.git
+RUN apk del git
+RUN apk del openssh-client 
 RUN rm -rf /root/.ssh
 RUN npm --prefix FileServer i FileServer
-CMD npm --prefix FileServer start
+CMD npm --prefix FileServer start 5110
 
 EXPOSE 5110
 
@@ -35,5 +45,6 @@ EXPOSE 5110
 # docker run -p 5110:5110 --rm -v ShareLocation:/FileServer/Share -it <image_name:tag>
 # Keep Your ShareLocation above where you want to keep the files.
 # Ready to run in local Network as ip_address:5110
+# Change port number if required (at all places in dockerfile)
 
 # You can change Host Port in either case in left side in docker ruun command. like 6000:5110
