@@ -13,16 +13,9 @@ RUN apk add tzdata
 RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 RUN apk del tzdata
 
-RUN mkdir /root/.ssh/
-ADD id_rsa /root/.ssh/id_rsa
-RUN chmod 700 /root/.ssh/id_rsa
-RUN chown -R root:root /root/.ssh
-RUN touch /root/.ssh/known_hosts
-RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
-RUN git clone --single-branch --branch master git@github.com:harshkasyap/FileServer.git
+RUN git clone --single-branch --branch master https://github.com/harshkasyap/FileServer.git
 RUN apk del git
 RUN apk del openssh-client
-RUN rm -rf /root/.ssh
 RUN npm --prefix FileServer i FileServer
 CMD npm --prefix FileServer start 5110
 
@@ -37,9 +30,6 @@ EXPOSE 5110
 
 
 # And, If you want to build it locally with some custom modifications, Play with this dockerfile
-# Pre-Requisites
-# You should have ssh-keygen generated and public key addded with your github account
-# keep id_rsa file in current folder having dockerfile
 # docker build -t <image_name:tag> .
 # Run it from where you have kept dockerfile. to build the docker image.
 # docker run -d -p 5110:5110 --rm -v ShareLocation:/FileServer/Share -it <image_name:tag>
